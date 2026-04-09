@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="tr"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Astera Siparis ve Katalog Paneli</title>
+<style>
+:root{
+  --bg:#edf4f8;--card:#fff;--line:#c4d3dd;--text:#18384f;--muted:#60798c;
+  --brand:#1d5279;--green:#2e6f52;--soft:#e6f0f6;--accent:#4f8db5;--danger:#b24d3f;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:Segoe UI,Arial,sans-serif;background:linear-gradient(135deg,#edf4f8 0%,#f5f9fc 100%);color:var(--text)}
+.wrap{max-width:1320px;margin:0 auto;padding:16px}
+.card{background:#fff;border:1px solid rgba(100,155,195,.22);border-radius:20px;box-shadow:0 8px 32px rgba(29,82,121,.07);overflow:hidden}
+.head{padding:20px 22px;border-bottom:1px solid rgba(100,155,195,.18);display:flex;align-items:center;gap:20px;background:linear-gradient(135deg,#1d5279 0%,#2d7ab5 100%)}
+.logo-wrap img{height:78px;max-width:220px;object-fit:contain}
+.logo-fb{width:72px;height:72px;border-radius:16px;background:rgba(255,255,255,.2);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:28px;border:2px solid rgba(255,255,255,.35)}
+.head-text{color:#fff}
+.head-title{font-size:26px;font-weight:900}
+.head-sub{font-size:14px;font-weight:600;opacity:.8;margin-top:4px}
+.nav{display:flex;gap:8px;flex-wrap:wrap;padding:14px 18px;border-bottom:1px solid rgba(100,155,195,.18);background:#f8fbfd}
+.tab-btn{padding:10px 14px;border:none;border-radius:999px;background:#e8f1f7;color:var(--muted);font-weight:800;cursor:pointer}
+.tab-btn.active{background:linear-gradient(135deg,var(--brand),var(--accent));color:#fff}
+.content{padding:18px}
+.order-grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px}
+@media(max-width:980px){.order-grid{grid-template-columns:1fr}}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:12px}
+.fg{display:flex;flex-direction:column;gap:4px}
+.fg label{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase}
+.fg input,.fg select,.fg textarea{padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;font-size:14px;font-family:inherit}
+.fg input:focus,.fg select:focus,.fg textarea:focus,.search:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,141,181,.12)}
+.check-row{display:flex;align-items:center;gap:10px;padding:10px 14px;border:1.5px solid var(--line);border-radius:10px;background:#f8fbfd;cursor:pointer;font-size:14px;font-weight:600}
+.invoice-grid{display:none;margin-top:10px;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+.invoice-grid.open{display:grid}
+.search-wrap{margin-top:14px;position:relative}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.search{width:100%;padding:11px 14px 11px 36px;border:1.5px solid var(--line);border-radius:12px;font-size:14px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}
+.pill{padding:9px 14px;border:none;background:#eef5fa;cursor:pointer;font-size:13px;font-weight:700;color:var(--muted);border-radius:999px}
+.pill.active{color:#fff;background:linear-gradient(135deg,var(--brand),var(--accent))}
+.products{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:14px}
+.product{background:#fff;border:1.5px solid rgba(100,155,195,.2);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.product.out{opacity:.72;border-color:rgba(178,77,63,.28)}
+.prod-img-wrap{width:100%;height:130px;border-radius:12px;background:linear-gradient(135deg,#f2f8fc,#e8f2f8);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.prod-img-wrap img{max-width:100%;max-height:100%;object-fit:contain}
+.prod-img-placeholder{font-size:34px;opacity:.3}
+.prod-name{font-weight:800;font-size:14px;line-height:1.35}
+.prod-meta{font-size:12px;color:var(--muted);line-height:1.6}
+.stock-ok{font-size:12px;font-weight:700;color:var(--green)}
+.stock-out{font-size:12px;font-weight:700;color:var(--danger)}
+.prod-price{font-size:22px;font-weight:900;color:var(--brand)}
+.prod-price small{display:block;font-size:11px;font-weight:600;color:var(--muted)}
+.qty-row{display:flex;align-items:center;gap:8px;margin-top:auto}
+.qty-input{width:64px;padding:8px 6px;border:1.5px solid var(--line);border-radius:8px;font-size:14px;text-align:center}
+.btn{border:none;border-radius:10px;padding:10px 14px;font-weight:800;cursor:pointer;font-size:13px}
+.btn-brand{background:linear-gradient(135deg,var(--brand),var(--accent));color:#fff}
+.btn-sec{background:#fff;border:1.5px solid var(--line);color:var(--muted)}
+.btn-danger{background:#fff0ee;border:1.5px solid rgba(178,77,63,.25);color:var(--danger)}
+.btn-wa{background:linear-gradient(135deg,#25D366,#1da851);color:#fff}
+.empty-msg{text-align:center;padding:40px 20px;color:var(--muted);border:2px dashed rgba(100,155,195,.25);border-radius:16px;background:rgba(255,255,255,.6)}
+.cart-sticky{position:sticky;top:16px}
+.cart-head{padding:18px 20px;border-bottom:1px solid rgba(100,155,195,.18);display:flex;align-items:center;justify-content:space-between}
+.cart-title{font-size:18px;font-weight:900}
+.cart-count{font-size:13px;font-weight:700;color:var(--muted);background:var(--soft);padding:3px 10px;border-radius:99px}
+.cart-body{padding:16px 18px}
+.cart-list{display:flex;flex-direction:column;gap:8px;max-height:300px;overflow-y:auto}
+.cart-item{padding:10px 12px;border:1px solid rgba(100,155,195,.18);border-radius:12px;background:linear-gradient(180deg,#fcfeff,#f4f8fb)}
+.cart-item-name{font-weight:800;font-size:13px}
+.cart-item-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.cart-item-row{display:flex;justify-content:space-between;align-items:center;margin-top:6px}
+.cart-item-price{font-weight:800;font-size:14px;color:var(--brand)}
+.btn-remove{background:none;border:none;color:var(--danger);cursor:pointer;font-size:18px;padding:2px 4px;line-height:1}
+.summary{margin-top:14px;padding:16px;border:1px solid rgba(100,155,195,.2);border-radius:16px;background:linear-gradient(180deg,#f8fbfd,#edf4f8)}
+.sum-row{display:flex;justify-content:space-between;font-size:14px;font-weight:700;padding:7px 0;border-top:1px solid rgba(100,155,195,.15)}
+.sum-row:first-child{border-top:none;padding-top:0}
+.sum-grand{padding:14px 16px;border-radius:14px;background:linear-gradient(135deg,var(--brand),var(--accent));color:#fff;display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+.sum-grand-val{font-size:22px;font-weight:900}
+.admin-layout{display:grid;gap:16px}
+.split{display:grid;grid-template-columns:360px minmax(0,1fr);gap:16px}
+@media(max-width:980px){.split{grid-template-columns:1fr}}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse}
+th,td{padding:10px 8px;border-bottom:1px solid rgba(100,155,195,.18);font-size:13px;text-align:left;vertical-align:top}
+th{color:var(--muted);font-size:12px;text-transform:uppercase}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap}
+.mono{font-family:Consolas,monospace}
+.status{margin-top:10px;font-size:13px;color:var(--muted)}
+.login-box{max-width:420px;margin:24px auto}
+.badge{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:800}
+.badge.ok{background:#e9f7f0;color:var(--green)}
+.badge.no{background:#fff0ee;color:var(--danger)}
+@media(max-width:720px){
+  body{font-size:15px}
+  .wrap{padding:10px}
+  .card{border-radius:16px}
+  .head{padding:16px;gap:12px;align-items:flex-start;flex-wrap:wrap}
+  .logo-wrap img{height:56px;max-width:160px}
+  .logo-fb{width:56px;height:56px;font-size:22px;border-radius:14px}
+  .head-title{font-size:20px;line-height:1.15}
+  .head-sub{font-size:12px}
+  .nav{padding:10px 12px;gap:6px;overflow-x:auto;flex-wrap:nowrap;-ms-overflow-style:none;scrollbar-width:none}
+  .nav::-webkit-scrollbar,.tabs::-webkit-scrollbar{display:none}
+  .tab-btn,.pill{white-space:nowrap;flex:0 0 auto}
+  .content{padding:12px}
+  .products{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .product{padding:12px}
+  .prod-img-wrap{height:112px}
+  .qty-row{flex-direction:column;align-items:stretch}
+  .qty-input{width:100%}
+  .btn{width:100%;justify-content:center}
+  .toolbar .btn{width:auto}
+  .cart-sticky{position:static}
+  .cart-head{padding:16px}
+  .cart-body{padding:14px}
+  .cart-list{max-height:none}
+  .sum-grand{flex-wrap:wrap;gap:10px}
+  .login-box{margin:12px auto}}
+@media(max-width:560px){
+  .wrap{padding:8px}
+  .content{padding:10px}
+  .form-grid,.invoice-grid{grid-template-columns:1fr}
+  .products{grid-template-columns:1fr}
+  .prod-price{font-size:20px}
+  .check-row{align-items:flex-start}
+  .sum-grand{flex-direction:column;align-items:flex-start}
+  th,td{padding:8px 6px;font-size:12px}
+}
+</style>
+<script>
+window.__SIPARIS_KATALOG_STATE__={"settings":{"title":"ASTERA TiCARET","subtitle":"Filtre Tedarikçiniz - Online Sipariş","wa":"5332250484","logo":"https://i.imgur.com/fuLZZna.png","adminPassword":"Dadas2534"},"catalog":{"PSA":{"label":"PSA","subtitle":"Peugeot · Citroën","cats":{"Hava":[{"id":"psa-h1","name":"Peugeot 308/508  -  Citroën C3/C4/C5 II 1.6 HDi","mann":"C 3585","oem":"1444.TV","price":100,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/C_3585-dim-1?qlt=82&dpr=off","modeller":"","active":true,"type":"Hava","groupKey":"PSA"},{"id":"psa-h2","name":"Peugeot Partner 2.0 HDI  -  Berlingo 2.0 HDI","mann":"C 21104/2","oem":"1444.CA","price":95,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/C_21_104.2?qlt=82&dpr=off","modeller":"","active":true,"type":"Hava","groupKey":"PSA"},{"id":"psa-h3","name":"Peugeot Partner 1.6 HDI  -  206/307 HDI","mann":"C 3282","oem":"1444.X5","price":100,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/C_3282?qlt=82&dpr=off","modeller":"","active":true,"type":"Hava","groupKey":"PSA"},{"id":"mn50c9ku13mg","name":"PEUGEOT 2008 / 208 / 301 / 308 II - CITROEN C3 II / DS3 / C-ELYSEE (RP 0112)","mann":"C24026","oem":"9674725580","price":95,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/C_24_026?qlt=82&ts=1771366420396&dpr=off","modeller":"PEUGEOT 2008 / 208 / 301 / 308 II - CITROEN C3 II / DS3 / C-ELYSEE (RP 0112)","active":true,"type":"Hava","groupKey":"PSA"},{"id":"mn50llmgn95j","name":"CITROEN C4, PEUGEOT 206, 206+, 307","mann":"C36010","oem":"1444 FC","price":115,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/C_36_010?qlt=82&ts=1771366537231&dpr=off","modeller":"CITROEN C4, PEUGEOT 206, 206+, 307","active":true,"type":"Hava","groupKey":"PSA"},{"id":"mn7v23wb97tk","name":"Peugeot 308-207 Citroën C4-Berlingo","mann":"C5082/2","oem":"1444 RJ","price":110,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/C_5082.2?qlt=82&ts=1774287626443&dpr=off","modeller":"","active":true,"type":"Hava","groupKey":"PSA"},{"id":"mn7vd1uxsdum","name":"CITROEN-FIAT DUCATO-OPEL MOVANO","mann":"C17237","oem":"1349042080","price":180,"stokAdet":54,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/C_17_237-erp1132884S52-dim-mm?qlt=82&ts=1774294850550&dpr=off","modeller":"","active":true,"type":"Hava","groupKey":"PSA"},{"id":"mn7vhppex55h","name":"Peugeot Boxer I,Boxer II,Citroen Jumper I, Jumper II-fiat ducato","mann":"C 17278","oem":"1444.A0","price":180,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/C_17_278?qlt=82&ts=1774287222841&dpr=off","modeller":"","active":true,"type":"Hava","groupKey":"PSA"},{"id":"mn7vldhw6fwp","name":"Peugeot Boxer I, J5 Serie, Citroen Jumper I, C25 Serie-Fiat Ducato-Iveco Daily I","mann":"C 17129","oem":"1444.A1","price":190,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/C_17_129?qlt=82&ts=1774287270474&dpr=off","modeller":"","active":true,"type":"Hava","groupKey":"PSA"},{"id":"mn51f1qwye78","name":"PEUGEOT PARTNER 3","mann":"C24017","oem":"98 023 486 80","price":95,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/C_24_017?qlt=82&ts=1771366416916&dpr=off","modeller":"PEUGEOT PARTNER 3","active":true,"type":"Hava","groupKey":"PSA"}],"Yag":[],"Polen":[{"id":"mn7wl6bmblwk","name":"Peugeot 307 01>, Citroen C3, Partner II","mann":"CU 2940","oem":"6447.NT","price":75,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/CU_2940?qlt=82&ts=1774287703525&dpr=off","modeller":"","active":true,"type":"Polen","groupKey":"PSA"},{"id":"mn96uc8y0cey","name":"Peugeot 307, Partner II, Citroen C3 (Karbonlu)","mann":"CUK2940","oem":"6447.KL","price":120,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/CUK_2940?qlt=82&ts=1774287749370&dpr=off","modeller":"","active":true,"type":"Polen","groupKey":"PSA"},{"id":"mn96yqmc0nun","name":"Citroen C5, Citroen Berlingo II, Peugeot Partner","mann":"CU2245","oem":"6447.HP","price":70,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/CU_2245?qlt=82&ts=1774287827188&dpr=off","modeller":"","active":true,"type":"Polen","groupKey":"PSA"},{"id":"mn98h9u16dcb","name":"Citroen C5, Citroen Berlingo II, Peugeot Partner (Karbonlu)","mann":"CUK2245","oem":"6447.SQ","price":120,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/CUK_2245?qlt=82&ts=1774288067786&dpr=off","modeller":"","active":true,"type":"Polen","groupKey":"PSA"},{"id":"mn98nw6zhsc3","name":"Peugeot Partner II Tepee, 3008, Citroen Berlingo II, C4 Picasso 08>","mann":"CU29003-2","oem":"6447.XF","price":85,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/CU_29_003-2?qlt=82&ts=1774287752934&dpr=off","modeller":"","active":true,"type":"Polen","groupKey":"PSA"},{"id":"mn9a1wtzcrsi","name":"Peugeot Partner II Tepee, Citroen Berlingo II, C4 Picasso 08> (Karbonlu)","mann":"CUK 29003-2","oem":"6447.XG","price":155,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/CUK_29_003-2?qlt=82&ts=1774287867747&dpr=off","modeller":"","active":true,"type":"Polen","groupKey":"PSA"},{"id":"mn9a5j0016vy","name":"Boxer III 06-, Jumper III 06-","mann":"CU2544","oem":"6447-YA","price":60,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/CU_2544?qlt=82&ts=1774287743567&dpr=off","modeller":"","active":true,"type":"Polen","groupKey":"PSA"},{"id":"mn9ab67n19am","name":"Peugeot Expert II 07-, Citroen Jumpy II 07-,","mann":"CU3847","oem":"6447.YK","price":80,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/CU_3847?qlt=82&ts=1774287827353&dpr=off","modeller":"","active":true,"type":"Polen","groupKey":"PSA"},{"id":"mn9aedam8r24","name":"Peugeot Expert II 07-, Citroen Jumpy II 07- (Karbonlu)","mann":"CUK3847","oem":"6447.YN","price":140,"stokAdet":50,"stock":true,"img":"https://www.mann-filter.com/tr-tr/katalog/arama-sonuclar%C4%B1/urun.html/cuk3847_mann-filter.html","modeller":"","active":true,"type":"Polen","groupKey":"PSA"},{"id":"mn9aj04ffael","name":"Peugeot 301-Citroen C-Elysée","mann":"CU24027","oem":"9814237680","price":60,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/CU_24_027?qlt=82&ts=1774287703761&dpr=off","modeller":"","active":true,"type":"Polen","groupKey":"PSA"},{"id":"mn9bhmdiik3e","name":"CITROEN C1, PEUGEOT 107, TOYOTA AYGO","mann":"CU 2317","oem":"6479 A5","price":110,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/CU_2317?qlt=82&ts=1774287752566&dpr=off","modeller":"","active":true,"type":"Polen","groupKey":"PSA"}],"Yakit":[]}},"VAG":{"label":"VAG","subtitle":"VW · Audi · Seat · Skoda","cats":{"Hava":[{"id":"vag-h1","name":"VW Caddy III-IV (Süngerli)","mann":"C 35154","oem":"1K0 129 620 E","price":110,"stokAdet":60,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/C_35_154?qlt=82&dpr=off","modeller":"VW CADDY III-IV SÜNGERLİ","active":true,"type":"Hava","groupKey":"VAG"},{"id":"mn4y2xf83vqa","name":"VW Golf VII, A3 III, Octavia 1.6 TDI, 2.0 TDI","mann":"c30005","oem":"5Q0 129 620B","price":120,"stokAdet":30,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/C_30_005?qlt=82&ts=1771366282954&dpr=off","modeller":"VW Golf VII, A3 III, Octavia 1.6 TDI, 2.0 TDI","active":true,"type":"Hava","groupKey":"VAG"},{"id":"vag-h5","name":"VW Caddy III  -  Golf V 1.6  -  Jetta II  -  Passat 1.6","mann":"C 14130","oem":"1F0 129 620","price":150,"stokAdet":21,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/C_14_130-erp1186111S52-down?qlt=82&dpr=off","modeller":"VW Caddy III SDI, Golf V 1.6 16V, Jetta II 07/05->, Yeni Passat 1.6 16V","active":true,"type":"Hava","groupKey":"VAG"},{"id":"mn4ymj325itk","name":"VW Transporter V  T5 - T6","mann":"C32191","oem":"7H0 129 620A","price":115,"stokAdet":30,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/C_32_191-erp1581993S52?qlt=82&ts=1771368138745&dpr=off","modeller":"VW Transporter V  T5 - T6","active":true,"type":"Hava","groupKey":"VAG"},{"id":"mn7vv010eos4","name":"VW Caddy V-Golf VII -Golf VIII-Polo VI-Tiguan II","mann":"C28043","oem":"5Q0 129 620 E","price":110,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/C_28_043?qlt=82&ts=1774287152193&dpr=off","modeller":"","active":true,"type":"Hava","groupKey":"VAG"},{"id":"mn7w07q6ip4u","name":"VW Crafter 30,35,50 2.5 TDI","mann":"C4312/1","oem":"2E0 129 620 B","price":150,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/C_4312.1-erp1061781S52-dim-mm?qlt=82&ts=1774294850138&dpr=off","modeller":"","active":true,"type":"Hava","groupKey":"VAG"},{"id":"vag-h6","name":"VW Golf VII  -  Polo V  -  Audi A3 III  -  Octavia TSI","mann":"C 27009","oem":"04E 129 620","price":125,"stokAdet":35,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/C_27_009-erp1117524S52-dim-mm?qlt=82&dpr=off","modeller":"VW Golf VII, Polo V, A3 III, Octavia 1.2 TSI, 1.4 TSI 12-","active":true,"type":"Hava","groupKey":"VAG"}],"Yag":[{"id":"vag-y1","name":"VW Golf VI  -  Jetta III  -  Passat  -  Amarok 2.0 TDI","mann":"HU 7008Z","oem":"03L115562","price":83.56,"stokAdet":218,"stock":false,"img":"https://s7g10.scene7.com/is/image/mannhummel/HU_7008_z?qlt=82&dpr=off","modeller":"VW Jetta III, Golf VI, Passat, A3 II, Fabia III 1.6 TDI, Amarok 2.0 TDI","active":false,"type":"Yag","groupKey":"VAG"}],"Polen":[{"id":"mn7wflnntuke","name":"VW Golf 5,Jetta II,Yeni Passat,Caddy III,Touran,Audi 3.Skoda Oktavia II","mann":"CU 2939","oem":"1K0 819 644","price":85,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/CU_2939-erp1577808S50-dim-mm?qlt=82&ts=1774294895598&dpr=off","modeller":"","active":true,"type":"Polen","groupKey":"VAG"},{"id":"vag-p1","name":"VW Golf 5  -  Jetta II  -  Passat  -  Caddy III  -  Touran","mann":"CUK 2939","oem":"1K1 819 653 A","price":135,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/CUK_2939?qlt=82&dpr=off","modeller":"VW Golf 5, Jetta II, Yeni Passat, Caddy III, Touran, Audi A3, Oktavia II","active":true,"type":"Polen","groupKey":"VAG"}],"Yakit":[]}},"FIAT":{"label":"Fiat","subtitle":"Fiat · Alfa Romeo","cats":{"Hava":[{"id":"mn4zn41mglqe","name":"Fiat Multijet (Albea,Doblo..)","mann":"C3877/1","oem":"51775324","price":95,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/C_3877.1-dim-1?qlt=82&ts=1771362337473&dpr=off","modeller":"Fiat Multijet (Albea,Doblo..)","active":true,"type":"Hava","groupKey":"FIAT"},{"id":"mn50fgvhlpik","name":"FİAT Brava,Bravo,Marea,Alfa Romeo Alfa 145,146,155","mann":"C25100","oem":"46481588","price":95,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/C_25_100?qlt=82&ts=1771366461571&dpr=off","modeller":"FİAT Brava,Bravo,Marea,Alfa Romeo Alfa 145,146,155","active":true,"type":"Hava","groupKey":"FIAT"},{"id":"mn51bm5zpt22","name":"FIAT DOBLO PEUGEOT PARTNER 3","mann":"C24036","oem":"98 139 088 80","price":95,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/C_24_036-erp1311852S52?qlt=82&ts=1771368103367&dpr=off","modeller":"FIAT DOBLO PEUGEOT PARTNER 3","active":true,"type":"Hava","groupKey":"FIAT"},{"id":"mn7v74s4edvr","name":"SLX BÜYÜK TİP / içi dışı telli","mann":"-","oem":"7721380","price":110,"stokAdet":50,"stock":true,"img":"https://iis-akakce.akamaized.net/p.z?https%3A%2F%2Fimg%2Epttavm%2Ecom%2Fpimages%2F592%2F112%2F460%2Fcf4c5660%2D2008%2D499a%2Dbf34%2D2bc2bd86a633%2Ewebp%3Fv%3D202402141157","modeller":"","active":true,"type":"Hava","groupKey":"FIAT"},{"id":"fiat-h1","name":"Fiat Doblo 1.6 Dizel  -  Punto  -  Linea","mann":"C 21106","oem":"55184249","price":90,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/C_21_106?qlt=82&dpr=off","modeller":"","active":true,"type":"Hava","groupKey":"FIAT"},{"id":"mn4zqmynhc37","name":"FİAT Doblo Yeni Model 2010> 1.3 Dizel","mann":"c36006/1","oem":"51901760","price":110,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/C_36_006.1?qlt=82&ts=1771366582095&dpr=off","modeller":"FİAT Doblo Yeni Model 2010> 1.3 Dizel","active":true,"type":"Hava","groupKey":"FIAT"},{"id":"fiat-h4","name":"Fiat Egea  -  Linea","mann":"C 3275","oem":"46783544","price":105,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/C_3275?qlt=82&dpr=off","modeller":"","active":true,"type":"Hava","groupKey":"FIAT"},{"id":"prd_mnrz5jt8_14d9gnk1m6v4gp1gn0","name":"SLX BÜYÜK TİP / içi dışı telli","mann":"C2853","oem":"7721380","price":110,"stokAdet":50,"stock":true,"img":"https://cdn-img.pttavm.com/pimages/592/112/460/cf4c5660-2008-499a-bf34-2bc2bd86a633.webp","modeller":"","active":true,"type":"Hava","groupKey":"FIAT"}],"Yag":[],"Polen":[{"id":"mn9aw7mxikvk","name":"Fiat Fiorino, Yeni Nesil Doblo, Linea","mann":"CU2040","oem":"77364561","price":75,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/CU_2040?qlt=82&ts=1774287827826&dpr=off","modeller":"","active":true,"type":"Polen","groupKey":"FIAT"}],"Yakit":[]}},"FORD":{"label":"Ford","subtitle":"Ford","cats":{"Hava":[{"id":"ford-h1","name":"Ford Focus II 1.6  -  C-Max 1.6 TDCi","mann":"C 16134/2","oem":"1496204","price":150,"stokAdet":70,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/C_16_134.2?qlt=82&dpr=off","modeller":"","active":true,"type":"Hava","groupKey":"FORD"},{"id":"mn4z9fnmyt9p","name":"FORD Transit 2.2TDCI-2.4TDCI","mann":"C28100","oem":"4041615","price":100,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/C_28_100?qlt=82&ts=1771366369419&dpr=off","modeller":"FORD Transit 2.2TDCI-2.4TDCI","active":true,"type":"Hava","groupKey":"FORD"},{"id":"mn4zua0b2ad0","name":"FORD Transit Connect (TC7) (SÜNGERLİ )","mann":"C2774/3","oem":"1058 022","price":90,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/C_2774.3_KIT?qlt=82&ts=1771366645814&dpr=off","modeller":"FORD Transit Connect (TC7) (SÜNGERLİ )","active":true,"type":"Hava","groupKey":"FORD"},{"id":"mn505hmb11li","name":"FORD Fiesta IV, Transit Connect","mann":"C2774/03","oem":"01058022","price":85,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/C_2774.3_KIT?qlt=82&ts=1771366645814&dpr=off","modeller":"FORD Fiesta IV, Transit Connect","active":true,"type":"Hava","groupKey":"FORD"},{"id":"ford-h5","name":"Ford Transit Custom 2012→","mann":"C 35009","oem":"1741459","price":130,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/C_35_009-erp1131475S52-dim-mm?qlt=82&dpr=off","modeller":"","active":true,"type":"Hava","groupKey":"FORD"},{"id":"mn508ijnuj6u","name":"FORD Transit  Courier/Fiesta VI","mann":"C17006","oem":"1516 725","price":100,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/C_17_006?qlt=82&ts=1771366416873&dpr=off","modeller":"FORD Transit  Courier/Fiesta VI","active":true,"type":"Hava","groupKey":"FORD"},{"id":"mn50oeb6lc9f","name":"FORD COURIER/FIESTA","mann":"C22031","oem":"GN15-9601-AA","price":110,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/C_22_031?qlt=82&ts=1771366463256&dpr=off","modeller":"FORD COURIER/FIESTA","active":true,"type":"Hava","groupKey":"FORD"},{"id":"mn50ucmov77g","name":"FORD Transit Custom","mann":"C34005","oem":"01741459","price":145,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/C_34_005?qlt=82&ts=1771366258185&dpr=off","modeller":"FORD Transit Custom","active":true,"type":"Hava","groupKey":"FORD"},{"id":"mn50ydjiw6ae","name":"FORD Fiesta V 03/02> 1.4 TDCi, Fusion 08/02>","mann":"C3087/2","oem":"1147 681","price":90,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/C_3087.2-dim?qlt=82&ts=1771362261815&dpr=off","modeller":"FORD Fiesta V 03/02> 1.4 TDCi, Fusion 08/02>","active":true,"type":"Hava","groupKey":"FORD"}],"Yag":[],"Polen":[{"id":"mn9ali27f5ph","name":"Ford Focus I, Tourneo Connect, Transit Connect","mann":"CU3567","oem":"1062253","price":75,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/CU_3567?qlt=82&ts=1774287942706&dpr=off","modeller":"","active":true,"type":"Polen","groupKey":"FORD"},{"id":"mn9anx8cwo2g","name":"Ford Focus I, Tourneo Connect, Transit Connect (Karbonlu)","mann":"CUK3567","oem":"1139654","price":120,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/CUK_3567?qlt=82&ts=1774287987030&dpr=off","modeller":"","active":true,"type":"Polen","groupKey":"FORD"},{"id":"mn9aqm1mr9zm","name":"Transit / Tourneo Courier /Yeni Fiesta","mann":"CU 2436","oem":"1594615","price":60,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/CU_2436?qlt=82&ts=1774287618776&dpr=off","modeller":"","active":true,"type":"Polen","groupKey":"FORD"},{"id":"mn9asoh9nybm","name":"Transit / Tourneo Courier /Yeni Fiesta (Karbonlu)","mann":"CUK2436","oem":"1 566 997","price":125,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/CUK_2436?qlt=82&ts=1774287941738&dpr=off","modeller":"","active":true,"type":"Polen","groupKey":"FORD"},{"id":"mn9b2fpcn0wl","name":"Transit Custom","mann":"CU29007","oem":"BK2118D543AA","price":75,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/CU_29_007?qlt=82&ts=1774287941572&dpr=off","modeller":"","active":true,"type":"Polen","groupKey":"FORD"},{"id":"mn9b61hq88nw","name":"Transit Custom (Karbonlu)","mann":"CUK29007","oem":"1839688","price":130,"stokAdet":50,"stock":true,"img":"https://www.mann-filter.com/tr-tr/katalog/arama-sonuclar%C4%B1/urun.html/cuk29007_mann-filter.html","modeller":"","active":true,"type":"Polen","groupKey":"FORD"}],"Yakit":[]}},"OPEL":{"label":"Opel","subtitle":"Opel","cats":{"Hava":[{"id":"opel-h1","name":"Opel Corsa-D Dizel  -  Fiat Linea","mann":"C 20106/1","oem":"58 34 043","price":90,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/C_20_106.1?qlt=82&dpr=off","modeller":"","active":true,"type":"Hava","groupKey":"OPEL"},{"id":"mn7w3wp01w12","name":"OPEL Astra-J 1.4 100HP, 1.6 115HP","mann":"C26106/1","oem":"835056","price":115,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/C_26_106?qlt=82&ts=1774287152281&dpr=off","modeller":"","active":true,"type":"Hava","groupKey":"OPEL"},{"id":"opel-h2","name":"Opel Astra-J 1.4  -  1.6","mann":"C 27107","oem":"834 126","price":115,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/C_27_107?qlt=82&dpr=off","modeller":"","active":true,"type":"Hava","groupKey":"OPEL"}],"Yag":[],"Polen":[],"Yakit":[]}},"RENAULT":{"label":"Renault / Dacia","subtitle":"Renault · Dacia","cats":{"Hava":[{"id":"mn7w8icd2txj","name":"RENAULT Megane II 1.5 dCi, 1.6 16V, Scenic III","mann":"C 2512","oem":"8200371661","price":105,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/C_2512?qlt=82&ts=1774287594584&dpr=off","modeller":"","active":true,"type":"Hava","groupKey":"RENAULT"},{"id":"ren-h1","name":"Renault Megane III  -  Scenic III  -  Fluence 1.5 dCi","mann":"C 25115","oem":"8200820859","price":110,"stokAdet":48,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/C_25_115?qlt=82&dpr=off","modeller":"RENAULT Megane III, Scenic III, Fluence 1.5 dci","active":true,"type":"Hava","groupKey":"RENAULT"},{"id":"ren-h2","name":"Renault Clio IV  -  Dacia Logan II / Sandero II","mann":"C 27030","oem":"165467674R","price":115,"stokAdet":72,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/C_27_030?qlt=82&dpr=off","modeller":"RENAULT Clio IV 1.2, 1.5 dCi, Dacia Logan II, Sandero II 1.5 dCi","active":true,"type":"Hava","groupKey":"RENAULT"},{"id":"ren-h3","name":"Renault Dacia Sandero  -  Clio 2/3","mann":"C 3366","oem":"77 01 059 409","price":100,"stokAdet":99,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/C_3366?qlt=82&dpr=off","modeller":"RENAULT DACIA SANDERO-RENO CLİO 2-3","active":true,"type":"Hava","groupKey":"RENAULT"}],"Yag":[{"id":"ren-y1","name":"Renault Clio IV  -  Megane III  -  Scenic III  -  Kangoo 1.5 dCi","mann":"W 7032","oem":"152089599R","price":150,"stokAdet":116,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/W_7032-1?qlt=82&dpr=off","modeller":"RENAULT CLIO IV 1.5DCI (13>), MEGANE III 1.5 DCI (09>)","active":true,"type":"Yag","groupKey":"RENAULT"}],"Polen":[{"id":"mn9azp1lmoz2","name":"Renault Clio III, Modus, Dacia Duster","mann":"CU1829","oem":"7 701 059 997","price":110,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/CU_1829?qlt=82&ts=1774287626551&dpr=off","modeller":"","active":true,"type":"Polen","groupKey":"RENAULT"},{"id":"ren-p1","name":"Renault Fluence 2010→ (Karbonlu)","mann":"CUK 1629","oem":"27 27 749 36R","price":110,"stokAdet":92,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/CUK_1629?qlt=82&dpr=off","modeller":"Fluence 10- (Karbonlu)","active":true,"type":"Polen","groupKey":"RENAULT"}],"Yakit":[]}},"HYUNDAİ-KİA":{"label":"Hyundai-Kia","subtitle":"","cats":{"Hava":[{"id":"mn516khxlu2x","name":"Hyundai Accent Era 1.4,1.6","mann":"C2775","oem":"28113-1G000","price":95,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/C_2775?qlt=82&ts=1771368111233&dpr=off","modeller":"Hyundai Accent Era 1.4,1.6","active":true,"type":"Hava","groupKey":"HYUNDAİ-KİA"}],"Yag":[],"Polen":[{"id":"mn9b95x57rlr","name":"Hyundai Tucson, Accent Era Blue","mann":"CU2336","oem":"97133 2E200","price":65,"stokAdet":50,"stock":true,"img":"https://s7g10.scene7.com/is/image/mannhummel/CU_2336?qlt=82&ts=1774287752827&dpr=off","modeller":"","active":true,"type":"Polen","groupKey":"HYUNDAİ-KİA"},{"id":"mn9bcwsvjgge","name":"Hyundai Accent Era","mann":"CU2331","oem":"97133-1E100","price":65,"stokAdet":50,"stock":true,"img":"https://www.mann-filter.com/tr-tr/katalog/arama-sonuclar%C4%B1/urun.html/cu2331_mann-filter.html","modeller":"","active":true,"type":"Polen","groupKey":"HYUNDAİ-KİA"}],"Yakit":[]}}}};
+</script>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <div class="head">
+      <div class="logo-wrap" id="logoArea"><img src="https://i.imgur.com/fuLZZna.png" alt="Logo"></div>
+      <div class="head-text">
+        <div class="head-title" id="headTitle">ASTERA TiCARET</div>
+        <div class="head-sub" id="headSub">Filtre Tedarikçiniz - Online Sipariş</div>
+      </div>
+    </div>
+    <div class="nav" id="mainTabs"><button class="tab-btn" data-tab="Siparis Ver">Siparis Ver</button><button class="tab-btn" data-tab="Katalog Yönetimi">Katalog Yönetimi</button><button class="tab-btn" data-tab="Gruplar">Gruplar</button><button class="tab-btn" data-tab="Fiyat / Stok">Fiyat / Stok</button><button class="tab-btn" data-tab="Ayarlar">Ayarlar</button><button class="tab-btn active" data-tab="Yedekle / Yükle">Yedekle / Yükle</button><button class="tab-btn" data-tab="Yonetici Cikis">Yonetici Cikis</button></div>
+    <div class="content" id="content"><div class="admin-layout split"><div class="card"><div class="cart-head"><div class="cart-title">Yedekleme</div></div><div class="cart-body"><div class="toolbar"><button class="btn btn-brand" id="downloadJsonBtn">katalog-yedek.json indir</button><button class="btn btn-sec" id="downloadHtmlBtn">Guncel Panel HTML Indir</button></div><div class="status">Mevcut katalog ve ayarlarinizi JSON veya tam HTML olarak disa aktarabilirsiniz.</div></div></div><div class="card"><div class="cart-head"><div class="cart-title">Yukleme</div></div><div class="cart-body"><div class="fg"><label>JSON Dosyasi Yukle</label><input id="jsonImport" type="file" accept="application/json"></div><div class="status">Yuklenen dosya aninda bu panele uygulanir.</div></div></div></div></div>
+  </div>
+</div>
+<script>
+(function(){
+  var DEFAULT_TYPES=["Hava","Yag","Polen","Yakit"];
+  var PUBLIC_TABS=["Siparis Ver"];
+  var ADMIN_TABS=["Siparis Ver","Katalog Yönetimi","Gruplar","Fiyat / Stok","Ayarlar","Yedekle / Yükle","Yonetici Cikis"];
+  var APP_VERSION="v2";
+  var APP_NS="asteraSiparisKatalog";
+  var STORAGE_VERSION_KEY=APP_NS+":storageVersion";
+  var STORAGE_CUSTOMER_KEY=APP_NS+":"+APP_VERSION+":customer";
+  var state=normalizeState(window.__SIPARIS_KATALOG_STATE__||{});
+  var currentTab="Siparis Ver";
+  var activeGroup="";
+  var activeType="";
+  var searchTerm="";
+  var cart={};
+  var productFormState=blankProduct();
+  var customerForm=normalizeCustomerForm(loadCustomerProfile());
+  var invoiceOpen=!!customerForm.wantInvoice;
+  var adminTapState={count:0,timer:null};
+
+  function g(id){return document.getElementById(id)}
+  function money(n){return (parseFloat(n||0)||0).toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2})+" TL"}
+  function esc(v){return String(v==null?"":v).replace(/[&<>\"']/g,function(ch){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[ch]})}
+  function normalizePhone(v){var d=String(v||"").replace(/\D/g,"");if(d.indexOf("90")===0&&d.length===12)d=d.slice(2);if(d.indexOf("0")===0&&d.length===11)d=d.slice(1);return d}
+  function uid(){var seed="";try{if(window.crypto&&window.crypto.getRandomValues){var buf=new Uint32Array(4);window.crypto.getRandomValues(buf);seed=Array.prototype.map.call(buf,function(x){return x.toString(36)}).join("")}}catch(e){}if(!seed)seed=Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2);return "prd_"+Date.now().toString(36)+"_"+seed.slice(0,18)}
+  function deepClone(v){return JSON.parse(JSON.stringify(v))}
+  function storage(){try{return window.localStorage}catch(e){return null}}
+  function normalizeCustomerForm(raw){var src=raw&&typeof raw==="object"?raw:{};return {phone:String(src.phone||""),name:String(src.name||""),firm:String(src.firm||""),wantInvoice:!!src.wantInvoice,taxNo:String(src.taxNo||""),taxOffice:String(src.taxOffice||"")}}
+  function loadCustomerProfile(){var ls=storage();if(!ls)return {};try{var raw=ls.getItem(STORAGE_CUSTOMER_KEY);return raw?JSON.parse(raw):{}}catch(e){return {}}}
+  function saveCustomerProfile(data){var ls=storage();if(!ls)return;try{ls.setItem(STORAGE_CUSTOMER_KEY,JSON.stringify(normalizeCustomerForm(data)))}catch(e){}}
+  function clearOldStorageVersions(){var ls=storage();if(!ls)return;try{var previousVersion=ls.getItem(STORAGE_VERSION_KEY);if(previousVersion&&previousVersion!==APP_VERSION){for(var i=ls.length-1;i>=0;i--){var key=ls.key(i);if(key&&key.indexOf(APP_NS+":")===0&&key.indexOf(APP_NS+":"+APP_VERSION+":")!==0&&key!==STORAGE_VERSION_KEY)ls.removeItem(key);}}ls.setItem(STORAGE_VERSION_KEY,APP_VERSION);}catch(e){}}
+  function applyVersionToUrl(){try{if(!window.history||!window.history.replaceState)return;var url=new URL(window.location.href);if(url.searchParams.get("v")===APP_VERSION)return;url.searchParams.set("v",APP_VERSION);window.history.replaceState({},document.title,url.toString());}catch(e){}}
+  function rememberCustomerFromDom(){var phoneEl=g("custPhone"),nameEl=g("custName"),firmEl=g("custFirm"),invoiceEl=g("wantInvoice"),taxNoEl=g("custTaxNo"),taxOfficeEl=g("custTaxOffice");customerForm=normalizeCustomerForm({phone:phoneEl?phoneEl.value:"",name:nameEl?nameEl.value:"",firm:firmEl?firmEl.value:"",wantInvoice:invoiceEl?invoiceEl.checked:invoiceOpen,taxNo:taxNoEl?taxNoEl.value:"",taxOffice:taxOfficeEl?taxOfficeEl.value:""});invoiceOpen=!!customerForm.wantInvoice;saveCustomerProfile(customerForm);return customerForm}
+  function bindCustomerPersistence(){["custPhone","custName","custFirm","custTaxNo","custTaxOffice"].forEach(function(id){var el=g(id);if(!el)return;el.oninput=function(){rememberCustomerFromDom();};el.onchange=function(){rememberCustomerFromDom();};});var invoiceEl=g("wantInvoice");if(invoiceEl){invoiceEl.onchange=function(){rememberCustomerFromDom();renderOrderTab();};}}
+  function registerHiddenAdminTrigger(){var trigger=document.querySelector(".head");if(!trigger)return;var onTap=function(){if(adminUnlocked())return;adminTapState.count+=1;clearTimeout(adminTapState.timer);if(adminTapState.count>=5){adminTapState.count=0;currentTab="Yonetici Girisi";render();return;}adminTapState.timer=setTimeout(function(){adminTapState.count=0;},1600);};trigger.onclick=onTap;}
+  function adminUnlocked(){try{return sessionStorage.getItem("siparis_katalog_admin")==="1"}catch(e){return false}}
+  function setAdminUnlocked(v){try{sessionStorage.setItem("siparis_katalog_admin",v?"1":"0")}catch(e){}}
+  function ensureCats(cats){var out={};DEFAULT_TYPES.forEach(function(type){out[type]=Array.isArray(cats&&cats[type])?cats[type].map(normalizeProduct):[]});return out}
+  function normalizeProduct(product){var p=product&&typeof product==="object"?deepClone(product):{};return {id:String(p.id||uid()),name:String(p.name||""),mann:String(p.mann||""),oem:String(p.oem||""),price:parseFloat(p.price||0)||0,stokAdet:parseInt(p.stokAdet,10)||0,stock:p.stock!==false,img:String(p.img||""),modeller:String(p.modeller||""),active:p.active!==false,type:String(p.type||"Hava"),groupKey:String(p.groupKey||"GENEL")}}
+  function normalizeState(raw){
+    var src=raw&&typeof raw==="object"?deepClone(raw):{};
+    var settings=src.settings||{};
+    var catalog=src.catalog&&typeof src.catalog==="object"?src.catalog:{};
+    var outCatalog={};
+    Object.keys(catalog).forEach(function(groupKey){
+      var group=catalog[groupKey]||{};
+      outCatalog[groupKey]={label:String(group.label||groupKey),subtitle:String(group.subtitle||""),cats:ensureCats(group.cats)};
+      DEFAULT_TYPES.forEach(function(type){
+        outCatalog[groupKey].cats[type]=outCatalog[groupKey].cats[type].map(function(product){
+          product.groupKey=groupKey;
+          product.type=type;
+          return product;
+        });
+      });
+    });
+    if(!Object.keys(outCatalog).length)outCatalog.GENEL={label:"Genel",subtitle:"",cats:ensureCats({})};
+    return {settings:{title:String(settings.title||"ASTERA TICARET"),subtitle:String(settings.subtitle||"Filtre Tedarikciniz - Online Siparis"),wa:String(settings.wa||""),logo:String(settings.logo||""),adminPassword:String(settings.adminPassword||"1234")},catalog:outCatalog};
+  }
+  function groups(){return Object.keys(state.catalog)}
+  function allProducts(){var out=[];groups().forEach(function(groupKey){DEFAULT_TYPES.forEach(function(type){(state.catalog[groupKey].cats[type]||[]).forEach(function(product){out.push(product)})})});return out}
+  function blankProduct(){var firstGroup=groups()[0]||"GENEL";return {id:"",name:"",mann:"",oem:"",price:"",stokAdet:"",stock:true,img:"",modeller:"",active:true,type:"Hava",groupKey:firstGroup}}
+  function ensureSelection(){var groupKeys=groups();if(!groupKeys.includes(activeGroup))activeGroup=groupKeys[0]||"";var cats=(state.catalog[activeGroup]&&state.catalog[activeGroup].cats)||{};if(!DEFAULT_TYPES.includes(activeType))activeType=DEFAULT_TYPES.find(function(type){return (cats[type]||[]).length>0})||DEFAULT_TYPES[0];if(!productFormState.groupKey||!state.catalog[productFormState.groupKey])productFormState.groupKey=activeGroup;if(!productFormState.type)productFormState.type=activeType}
+  function filteredProducts(){ensureSelection();var q=searchTerm.toLowerCase().trim(),list=q?allProducts():(state.catalog[activeGroup].cats[activeType]||[]);return list.filter(function(product){if(product.active===false&&!adminUnlocked())return false;return !q||[product.name,product.mann,product.oem,product.modeller,product.groupKey,product.type].join(" ").toLowerCase().indexOf(q)>=0})}
+  function setQty(id,qty){qty=Math.max(0,parseInt(qty,10)||0);var product=allProducts().find(function(item){return item.id===id});if(!product)return;if(qty===0)delete cart[id];else cart[id]={product:product,qty:qty};render()}
+  function orderTotals(){var subtotal=0;Object.keys(cart).forEach(function(id){subtotal+=(parseFloat(cart[id].product.price||0)||0)*(parseInt(cart[id].qty,10)||0)});var vat=invoiceOpen?subtotal*0.2:0;return {subtotal:subtotal,vat:vat,total:subtotal+vat}}
+  function buildWhatsappMessage(){
+    var profile=rememberCustomerFromDom(),totals=orderTotals(),name=profile.name||"",firm=profile.firm||"",phone=normalizePhone(profile.phone||""),taxNo=profile.taxNo||"",taxOffice=profile.taxOffice||"";
+    var lines=[state.settings.title+" - YENI SIPARIS","Tarih: "+new Date().toLocaleDateString("tr-TR"),"Musteri: "+(name||firm||"Belirtilmedi")];
+    if(phone)lines.push("Telefon: "+phone);
+    if(firm)lines.push("Firma: "+firm);
+    if(invoiceOpen){lines.push("Fatura: Evet");if(taxNo)lines.push("Vergi No: "+taxNo);if(taxOffice)lines.push("Vergi Dairesi: "+taxOffice);}
+    lines.push("-------------------------");
+    Object.keys(cart).forEach(function(id){var item=cart[id],line=(item.product.price||0)*item.qty;lines.push((item.product.mann||item.product.name||"Urun")+" x "+item.qty+" = "+money(line));});
+    lines.push("-------------------------");
+    lines.push("Ara Toplam: "+money(totals.subtotal));
+    if(invoiceOpen)lines.push("KDV %20: "+money(totals.vat));
+    lines.push("GENEL TOPLAM: "+money(totals.total));
+    return lines.join("\n");
+  }
+  function renderHeader(){g("headTitle").textContent=state.settings.title;g("headSub").textContent=state.settings.subtitle;g("logoArea").innerHTML=state.settings.logo?"<img src='"+esc(state.settings.logo)+"' alt='Logo'>":"<div class='logo-fb'>A</div>"}
+  function renderTabs(){
+    var isAdmin=adminUnlocked();
+    var tabs=isAdmin?ADMIN_TABS:PUBLIC_TABS;
+    var allowed=tabs.slice();
+    if(!isAdmin)allowed.push("Yonetici Girisi");
+    if(allowed.indexOf(currentTab)===-1)currentTab="Siparis Ver";
+    g("mainTabs").innerHTML=tabs.map(function(tab){
+      var active=(tab===currentTab);
+      return "<button class='tab-btn"+(active?" active":"")+"' data-tab='"+esc(tab)+"'>"+tab+"</button>";
+    }).join("");
+    Array.prototype.forEach.call(g("mainTabs").querySelectorAll("[data-tab]"),function(btn){
+      btn.onclick=function(){
+        var next=this.getAttribute("data-tab");
+        if(next==="Yonetici Cikis"){
+          setAdminUnlocked(false);
+          currentTab="Siparis Ver";
+          render();
+          return;
+        }
+        currentTab=next;
+        render();
+      };
+    });
+  }
+  function renderAdminAccess(){registerHiddenAdminTrigger();}
+  function renderOrderTab(){
+    ensureSelection();
+    invoiceOpen=!!customerForm.wantInvoice;
+    var products=filteredProducts(),totals=orderTotals();
+    var groupTabs=groups().map(function(groupKey){return "<button class='pill"+(groupKey===activeGroup?" active":"")+"' data-group='"+esc(groupKey)+"'>"+esc(state.catalog[groupKey].label||groupKey)+"</button>"}).join("");
+    var typeTabs=DEFAULT_TYPES.map(function(type){return "<button class='pill"+(type===activeType?" active":"")+"' data-type='"+esc(type)+"'>"+esc(type)+"</button>"}).join("");
+    var productHtml=products.length?products.map(function(product){var qty=cart[product.id]?cart[product.id].qty:0,inStock=product.stock!==false&&(product.stokAdet==null||product.stokAdet>0),hasPrice=(parseFloat(product.price||0)||0)>0;return "<div class='product"+(inStock?"":" out")+"'><div class='prod-img-wrap'>"+(product.img?"<img src='"+esc(product.img)+"' alt='' loading='lazy'>":"<span class='prod-img-placeholder'>A</span>")+"</div><div class='prod-name'>"+esc(product.name||"Urun")+"</div><div class='prod-meta'><div><strong>MANN:</strong> "+esc(product.mann||"-")+"</div><div><strong>OEM:</strong> "+esc(product.oem||"-")+"</div>"+(product.modeller?"<div><strong>Arac:</strong> "+esc(product.modeller)+"</div>":"")+"</div><div class='"+(inStock?"stock-ok":"stock-out")+"'>"+(inStock?"Stok Var":"Stok Yok")+"</div>"+(hasPrice?"<div class='prod-price'>"+money(product.price)+"<small>KDV Haric</small></div>":"<div class='prod-price' style='font-size:14px;color:var(--muted)'>Fiyat için arayın</div>")+(inStock&&hasPrice?"<div class='qty-row'><input class='qty-input' type='number' min='0' value='"+qty+"' data-qty='"+esc(product.id)+"'><button class='btn btn-brand' data-add='"+esc(product.id)+"'>Sepete Ekle</button></div>":"<div class='qty-row'><button class='btn btn-sec' data-ask='"+esc(product.id)+"'>Termin Sor</button></div>")+"</div>"}).join(""):"<div class='empty-msg'>Urun bulunamadi.</div>";
+    g("content").innerHTML="<div class='order-grid'><div><div class='form-grid'><div class='fg'><label>Telefon</label><input id='custPhone' type='tel' placeholder='5xx xxx xx xx' value='"+esc(customerForm.phone)+"'></div><div class='fg'><label>Ad Soyad</label><input id='custName' placeholder='Musteri adi' value='"+esc(customerForm.name)+"'></div><div class='fg'><label>Firma</label><input id='custFirm' placeholder='Firma adi' value='"+esc(customerForm.firm)+"'></div></div><label class='check-row'><input type='checkbox' id='wantInvoice'"+(invoiceOpen?" checked":"")+"> Fatura istiyorum</label><div class='invoice-grid"+(invoiceOpen?" open":"")+"' id='invoiceFields'><div class='fg'><label>Vergi Numarasi</label><input id='custTaxNo' placeholder='Vergi numarasi' value='"+esc(customerForm.taxNo)+"'></div><div class='fg'><label>Vergi Dairesi</label><input id='custTaxOffice' placeholder='Vergi dairesi' value='"+esc(customerForm.taxOffice)+"'></div></div><div class='search-wrap'><span class='search-icon'>?</span><input id='search' class='search' placeholder='MANN, OEM, arac modeli veya urun adi ara...' value='"+esc(searchTerm)+"'></div><div class='tabs'>"+groupTabs+"</div><div class='tabs'>"+typeTabs+"</div><div class='products'>"+productHtml+"</div></div><div><div class='card cart-sticky'><div class='cart-head'><div class='cart-title'>Sepetim</div><div class='cart-count'>"+Object.keys(cart).length+" urun</div></div><div class='cart-body'><div class='cart-list'>"+(Object.keys(cart).length?Object.keys(cart).map(function(id){var item=cart[id],line=(item.product.price||0)*item.qty;return "<div class='cart-item'><div class='cart-item-name'>"+esc(item.product.mann||item.product.name||"Urun")+"</div><div class='cart-item-sub'>"+esc(String(item.product.name||"").substring(0,42))+"</div><div class='cart-item-sub'>"+item.qty+" adet x "+money(item.product.price||0)+"</div><div class='cart-item-row'><span class='cart-item-price'>"+money(line)+"</span><button class='btn-remove' data-remove='"+esc(id)+"'>x</button></div></div>"}).join(""):"<div class='empty-msg' style='padding:24px 14px'>Sepetiniz bos.</div>")+"</div><div class='summary'><div class='sum-row'><span>Ara Toplam</span><span>"+money(totals.subtotal)+"</span></div>"+(invoiceOpen?"<div class='sum-row'><span>KDV %20</span><span>"+money(totals.vat)+"</span></div>":"")+"<div class='sum-grand'><span>Genel Toplam</span><span class='sum-grand-val'>"+money(totals.total)+"</span></div></div><button class='btn btn-wa' id='sendOrderBtn' style='width:100%;margin-top:12px'>WhatsApp ile Siparis Ver</button></div></div></div></div>";
+    bindOrderTab();
+  }
+  function bindOrderTab(){
+    bindCustomerPersistence();
+    Array.prototype.forEach.call(document.querySelectorAll("[data-group]"),function(btn){btn.onclick=function(){rememberCustomerFromDom();activeGroup=this.getAttribute("data-group");render();};});
+    Array.prototype.forEach.call(document.querySelectorAll("[data-type]"),function(btn){btn.onclick=function(){rememberCustomerFromDom();activeType=this.getAttribute("data-type");render();};});
+    Array.prototype.forEach.call(document.querySelectorAll("[data-qty]"),function(inp){inp.onchange=function(){rememberCustomerFromDom();setQty(this.getAttribute("data-qty"),this.value);};});
+    Array.prototype.forEach.call(document.querySelectorAll("[data-add]"),function(btn){btn.onclick=function(){rememberCustomerFromDom();var id=this.getAttribute("data-add");setQty(id,(cart[id]?cart[id].qty:0)+1);};});
+    Array.prototype.forEach.call(document.querySelectorAll("[data-remove]"),function(btn){btn.onclick=function(){rememberCustomerFromDom();setQty(this.getAttribute("data-remove"),0);};});
+    Array.prototype.forEach.call(document.querySelectorAll("[data-ask]"),function(btn){btn.onclick=function(){rememberCustomerFromDom();var item=allProducts().find(function(product){return product.id===btn.getAttribute("data-ask");});if(!item||!state.settings.wa)return;window.open("https://wa.me/"+state.settings.wa+"?text="+encodeURIComponent("Merhaba, "+(item.mann||item.name||"urun")+" icin termin bilgisi alabilir miyim?"),"_blank");};});
+    g("search").oninput=function(){rememberCustomerFromDom();searchTerm=this.value;renderOrderTab();};
+    g("sendOrderBtn").onclick=function(){rememberCustomerFromDom();if(!Object.keys(cart).length){alert("Once urun ekleyin.");return;}if(!state.settings.wa){alert("WhatsApp numarasi tanimli degil.");return;}window.open("https://wa.me/"+state.settings.wa+"?text="+encodeURIComponent(buildWhatsappMessage()),"_blank");};
+  }
+  function renderAdminGate(){
+    g("content").innerHTML="<div class='login-box card'><div class='cart-head'><div class='cart-title'>Yonetici Girisi</div></div><div class='cart-body'><div class='fg'><label>Sifre</label><input id='adminPass' type='password' placeholder='Yonetici sifresi' autocomplete='current-password'></div><div class='status'>Bu alan sadece katalog yonetimi icindir.</div><div class='toolbar' style='margin-top:12px'><button class='btn btn-brand' id='adminLoginBtn'>Giris Yap</button><button class='btn btn-sec' id='backOrderBtn'>Kataloga Don</button></div></div></div>";
+    g("adminLoginBtn").onclick=function(){if((g("adminPass").value||"")!==state.settings.adminPassword){alert("Sifre hatali.");return;}setAdminUnlocked(true);currentTab="Katalog Yönetimi";render();};
+    g("backOrderBtn").onclick=function(){currentTab="Siparis Ver";render();};
+  }
+  function renderProductManager(){
+    var products=allProducts();
+    g("content").innerHTML="<div class='admin-layout split'><div class='card'><div class='cart-head'><div class='cart-title'>Urun Formu</div></div><div class='cart-body'><div class='form-grid'><div class='fg'><label>ID</label><input id='pf_id' value='"+esc(productFormState.id)+"' placeholder='Bos birakilirsa olusturulur'></div><div class='fg'><label>Grup</label><select id='pf_group'>"+groups().map(function(groupKey){return "<option value='"+esc(groupKey)+"'"+(productFormState.groupKey===groupKey?" selected":"")+">"+esc(state.catalog[groupKey].label)+"</option>";}).join("")+"</select></div><div class='fg'><label>Tur</label><select id='pf_type'>"+DEFAULT_TYPES.map(function(type){return "<option value='"+esc(type)+"'"+(productFormState.type===type?" selected":"")+">"+esc(type)+"</option>";}).join("")+"</select></div></div><div class='form-grid'><div class='fg'><label>Urun Adi</label><input id='pf_name' value='"+esc(productFormState.name)+"'></div><div class='fg'><label>MANN</label><input id='pf_mann' value='"+esc(productFormState.mann)+"'></div><div class='fg'><label>OEM</label><input id='pf_oem' value='"+esc(productFormState.oem)+"'></div></div><div class='form-grid'><div class='fg'><label>Fiyat</label><input id='pf_price' type='number' step='0.01' value='"+esc(productFormState.price)+"'></div><div class='fg'><label>Stok Adet</label><input id='pf_stokAdet' type='number' value='"+esc(productFormState.stokAdet)+"'></div><div class='fg'><label>Resim URL</label><input id='pf_img' value='"+esc(productFormState.img)+"'></div></div><div class='fg'><label>Arac / Model Bilgisi</label><textarea id='pf_modeller' rows='3'>"+esc(productFormState.modeller)+"</textarea></div><div class='form-grid'><label class='check-row'><input id='pf_stock' type='checkbox'"+(productFormState.stock?" checked":"")+"> Stok Var</label><label class='check-row'><input id='pf_active' type='checkbox'"+(productFormState.active?" checked":"")+"> Aktif</label></div><div class='toolbar' style='margin-top:12px'><button class='btn btn-brand' id='saveProductBtn'>Kaydet</button><button class='btn btn-sec' id='resetProductBtn'>Temizle</button></div></div></div><div class='card'><div class='cart-head'><div class='cart-title'>Mevcut Urunler</div></div><div class='cart-body table-wrap'><table><thead><tr><th>Urun</th><th>Grup / Tur</th><th>Fiyat</th><th>Stok</th><th></th></tr></thead><tbody>"+(products.length?products.map(function(product){return "<tr><td><strong>"+esc(product.name||"-")+"</strong><div class='mono'>"+esc(product.mann||product.id)+"</div></td><td>"+esc(product.groupKey)+" / "+esc(product.type)+"</td><td>"+((product.price||0)>0?money(product.price):"Fiyat icin arayin")+"</td><td><span class='badge "+(product.stock&&product.stokAdet>0?"ok":"no")+"'>"+(product.stock&&product.stokAdet>0?"Stok var":"Stok yok")+"</span></td><td><div class='toolbar'><button class='btn btn-sec' data-edit='"+esc(product.id)+"'>Duzenle</button><button class='btn btn-danger' data-del='"+esc(product.id)+"'>Sil</button></div></td></tr>";}).join(""):"<tr><td colspan='5'>Urun yok.</td></tr>")+"</tbody></table></div></div></div>";
+    g("saveProductBtn").onclick=saveProductForm;
+    g("resetProductBtn").onclick=function(){productFormState=blankProduct();render();};
+    Array.prototype.forEach.call(document.querySelectorAll("[data-edit]"),function(btn){btn.onclick=function(){loadProductIntoForm(this.getAttribute("data-edit"));};});
+    Array.prototype.forEach.call(document.querySelectorAll("[data-del]"),function(btn){btn.onclick=function(){deleteProduct(this.getAttribute("data-del"));};});
+  }
+  function collectProductForm(){return normalizeProduct({id:(g("pf_id").value||"").trim()||uid(),groupKey:g("pf_group").value,type:g("pf_type").value,name:g("pf_name").value,mann:g("pf_mann").value,oem:g("pf_oem").value,price:g("pf_price").value,stokAdet:g("pf_stokAdet").value,stock:g("pf_stock").checked,img:g("pf_img").value,modeller:g("pf_modeller").value,active:g("pf_active").checked})}
+  function saveProductForm(){var product=collectProductForm();if(!product.name.trim()){alert("Urun adi zorunlu.");return;}removeProductById(product.id,true);state.catalog[product.groupKey].cats[product.type].push(product);productFormState=blankProduct();render();}
+  function removeProductById(id,silent){groups().forEach(function(groupKey){DEFAULT_TYPES.forEach(function(type){state.catalog[groupKey].cats[type]=state.catalog[groupKey].cats[type].filter(function(product){return product.id!==id;});});});delete cart[id];if(!silent)render();}
+  function deleteProduct(id){if(!confirm("Urun silinsin mi?"))return;removeProductById(id);}
+  function loadProductIntoForm(id){var product=allProducts().find(function(item){return item.id===id;});if(!product)return;productFormState=deepClone(product);currentTab="Katalog Yönetimi";render();}
+  function renderGroupsTab(){
+    g("content").innerHTML="<div class='admin-layout split'><div class='card'><div class='cart-head'><div class='cart-title'>Yeni Grup</div></div><div class='cart-body'><div class='fg'><label>Grup Kodu</label><input id='newGroupKey' placeholder='BMW'></div><div class='fg'><label>Grup Adi</label><input id='newGroupLabel' placeholder='BMW Grubu'></div><div class='fg'><label>Alt Baslik</label><input id='newGroupSub' placeholder='BMW · Mini'></div><div class='toolbar' style='margin-top:12px'><button class='btn btn-brand' id='addGroupBtn'>Grup Ekle</button></div></div></div><div class='card'><div class='cart-head'><div class='cart-title'>Mevcut Gruplar</div></div><div class='cart-body table-wrap'><table><thead><tr><th>Kod</th><th>Ad</th><th>Alt Baslik</th><th>Urun</th><th></th></tr></thead><tbody>"+groups().map(function(groupKey){var count=DEFAULT_TYPES.reduce(function(sum,type){return sum+(state.catalog[groupKey].cats[type]||[]).length;},0);return "<tr><td class='mono'>"+esc(groupKey)+"</td><td><input data-group-label='"+esc(groupKey)+"' value='"+esc(state.catalog[groupKey].label)+"'></td><td><input data-group-sub='"+esc(groupKey)+"' value='"+esc(state.catalog[groupKey].subtitle||"")+"'></td><td>"+count+"</td><td><div class='toolbar'><button class='btn btn-sec' data-group-save='"+esc(groupKey)+"'>Kaydet</button><button class='btn btn-danger' data-group-del='"+esc(groupKey)+"'>Sil</button></div></td></tr>";}).join("")+"</tbody></table></div></div></div>";
+    g("addGroupBtn").onclick=function(){var key=(g("newGroupKey").value||"").toUpperCase().trim();if(!key){alert("Grup kodu zorunlu.");return;}if(state.catalog[key]){alert("Bu grup zaten var.");return;}state.catalog[key]={label:(g("newGroupLabel").value||key).trim(),subtitle:(g("newGroupSub").value||"").trim(),cats:ensureCats({})};render();};
+    Array.prototype.forEach.call(document.querySelectorAll("[data-group-save]"),function(btn){btn.onclick=function(){var key=this.getAttribute("data-group-save");state.catalog[key].label=document.querySelector("[data-group-label='"+key+"']").value.trim()||key;state.catalog[key].subtitle=document.querySelector("[data-group-sub='"+key+"']").value.trim();render();};});
+    Array.prototype.forEach.call(document.querySelectorAll("[data-group-del]"),function(btn){btn.onclick=function(){var key=this.getAttribute("data-group-del");var count=DEFAULT_TYPES.reduce(function(sum,type){return sum+(state.catalog[key].cats[type]||[]).length;},0);if(count&&!confirm("Bu grupta urunler var. Yine de silinsin mi?"))return;delete state.catalog[key];if(!groups().length)state.catalog.GENEL={label:"Genel",subtitle:"",cats:ensureCats({})};ensureSelection();render();};});
+  }
+  function renderPriceStockTab(){
+    var rows=allProducts();
+    g("content").innerHTML="<div class='card'><div class='cart-head'><div class='cart-title'>Fiyat / Stok Yonetimi</div></div><div class='cart-body table-wrap'><table><thead><tr><th>Urun</th><th>Grup</th><th>Tur</th><th>Fiyat</th><th>Stok Adet</th><th>Stok</th><th>Aktif</th><th></th></tr></thead><tbody>"+(rows.length?rows.map(function(product){return "<tr><td><strong>"+esc(product.name||"-")+"</strong><div class='mono'>"+esc(product.mann||product.id)+"</div></td><td>"+esc(product.groupKey)+"</td><td>"+esc(product.type)+"</td><td><input data-price='"+esc(product.id)+"' type='number' step='0.01' value='"+esc(product.price)+"'></td><td><input data-qty='"+esc(product.id)+"' type='number' value='"+esc(product.stokAdet)+"'></td><td><input data-stock='"+esc(product.id)+"' type='checkbox'"+(product.stock?" checked":"")+"></td><td><input data-active='"+esc(product.id)+"' type='checkbox'"+(product.active?" checked":"")+"></td><td><button class='btn btn-brand' data-fast-save='"+esc(product.id)+"'>Kaydet</button></td></tr>";}).join(""):"<tr><td colspan='8'>Urun yok.</td></tr>")+"</tbody></table></div></div>";
+    Array.prototype.forEach.call(document.querySelectorAll("[data-fast-save]"),function(btn){btn.onclick=function(){var id=this.getAttribute("data-fast-save"),product=allProducts().find(function(item){return item.id===id;});if(!product)return;product.price=parseFloat(document.querySelector("[data-price='"+id+"']").value||0)||0;product.stokAdet=parseInt(document.querySelector("[data-qty='"+id+"']").value,10)||0;product.stock=!!document.querySelector("[data-stock='"+id+"']").checked;product.active=!!document.querySelector("[data-active='"+id+"']").checked;render();};});
+  }
+  function renderSettingsTab(){
+    g("content").innerHTML="<div class='card'><div class='cart-head'><div class='cart-title'>Genel Ayarlar</div></div><div class='cart-body'><div class='form-grid'><div class='fg'><label>Baslik</label><input id='st_title' value='"+esc(state.settings.title)+"'></div><div class='fg'><label>Alt Baslik</label><input id='st_subtitle' value='"+esc(state.settings.subtitle)+"'></div></div><div class='form-grid'><div class='fg'><label>WhatsApp</label><input id='st_wa' value='"+esc(state.settings.wa)+"'></div><div class='fg'><label>Logo URL</label><input id='st_logo' value='"+esc(state.settings.logo)+"'></div></div><div class='fg'><label>Yonetici Sifresi</label><input id='st_adminPass' type='password' value='"+esc(state.settings.adminPassword)+"'></div><div class='toolbar' style='margin-top:12px'><button class='btn btn-brand' id='saveSettingsBtn'>Kaydet</button></div></div></div>";
+    g("saveSettingsBtn").onclick=function(){state.settings.title=g("st_title").value.trim()||state.settings.title;state.settings.subtitle=g("st_subtitle").value.trim();state.settings.wa=normalizePhone(g("st_wa").value||"");state.settings.logo=g("st_logo").value.trim();state.settings.adminPassword=g("st_adminPass").value||"1234";render();};
+  }
+  function downloadJson(){var blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json;charset=utf-8"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="katalog-yedek.json";document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},1500);}
+  function exportCurrentHtml(){var html=document.documentElement.outerHTML.replace(/window\.__SIPARIS_KATALOG_STATE__=\{[\s\S]*?\};/,function(){return "window.__SIPARIS_KATALOG_STATE__="+JSON.stringify(state)+";";}),blob=new Blob(["<!DOCTYPE html>\n"+html],{type:"text/html;charset=utf-8"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="siparis-katalog-paneli.html";document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},1500);}
+  function renderBackupTab(){
+    g("content").innerHTML="<div class='admin-layout split'><div class='card'><div class='cart-head'><div class='cart-title'>Yedekleme</div></div><div class='cart-body'><div class='toolbar'><button class='btn btn-brand' id='downloadJsonBtn'>katalog-yedek.json indir</button><button class='btn btn-sec' id='downloadHtmlBtn'>Guncel Panel HTML Indir</button></div><div class='status'>Mevcut katalog ve ayarlarinizi JSON veya tam HTML olarak disa aktarabilirsiniz.</div></div></div><div class='card'><div class='cart-head'><div class='cart-title'>Yukleme</div></div><div class='cart-body'><div class='fg'><label>JSON Dosyasi Yukle</label><input id='jsonImport' type='file' accept='application/json'></div><div class='status'>Yuklenen dosya aninda bu panele uygulanir.</div></div></div></div>";
+    g("downloadJsonBtn").onclick=downloadJson;
+    g("downloadHtmlBtn").onclick=exportCurrentHtml;
+    g("jsonImport").onchange=function(e){var file=e.target.files&&e.target.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(){try{state=normalizeState(JSON.parse(reader.result));activeGroup="";activeType="";productFormState=blankProduct();cart={};render();}catch(err){alert("JSON dosyasi okunamadi.");}};reader.readAsText(file,"utf-8");};
+  }
+  function render(){
+    ensureSelection();
+    renderHeader();
+    renderTabs();
+    renderAdminAccess();
+    if(currentTab==="Siparis Ver")return renderOrderTab();
+    if(currentTab==="Yonetici Girisi")return renderAdminGate();
+    if(!adminUnlocked()){
+      currentTab="Yonetici Girisi";
+      renderTabs();
+      renderAdminAccess();
+      return renderAdminGate();
+    }
+    if(currentTab==="Katalog Yönetimi")return renderProductManager();
+    if(currentTab==="Gruplar")return renderGroupsTab();
+    if(currentTab==="Fiyat / Stok")return renderPriceStockTab();
+    if(currentTab==="Ayarlar")return renderSettingsTab();
+    if(currentTab==="Yedekle / Yükle")return renderBackupTab();
+    currentTab="Siparis Ver";
+    return renderOrderTab();
+  }
+  clearOldStorageVersions();
+  customerForm=normalizeCustomerForm(loadCustomerProfile());
+  invoiceOpen=!!customerForm.wantInvoice;
+  applyVersionToUrl();
+  render();
+})();
+</script>
+
+</body></html>
